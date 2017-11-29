@@ -235,13 +235,39 @@ Now the, the predictor matrix is modified by assigning the value zero - to the c
 predM[, c("PassengerId", "Name","Ticket","Cabin")]=0    
 meth[c("Cabin")]=""
 ```
-As the changes are made, the imputation is iterated for 5 times with the respective predictor matrix and imputation methods. Complete function of MICE package will append the imputed values to the original data set. 
+As the changes are made, the imputation is iterated for 5 times with the respective predictor matrix and imputation methods. Complete function of MICE package will append the imputed values to the original data set.
+Finally, checking is done to see whether the values are imputed or not.
 
 ```
 imp = mice(train, m=5, predictorMatrix = predM, method = meth)
 train = complete(imp)
-```
 
+> sapply(train, function(x) sum(is.na(x)))
+PassengerId    Survived      Pclass        Name         Sex         Age       SibSp       Parch      Ticket 
+          0           0           0           0           0           0           0           0           0 
+       Fare       Cabin    Embarked 
+          0         687           0 
+
+```
+Since, the Cabin Variable is highly having unique values and its very difficult to interpret and obtain those values, they are not imputed and it is also removed from the modelling because of the high number of missing values. 
+
+
+Correlation matrix 
+  - Correlation matrix is used to see the correlation between the variables and it is useful in finding if multicollinearity exists between the explanatory variables.
+
+```
+> cor_vars = train[,c("Age", "SibSp", "Fare", "Parch")]
+
+> cor(cor_vars)
+              Age      SibSp       Fare      Parch
+Age    1.00000000 -0.3071980 0.09398979 -0.2052178
+SibSp -0.30719798  1.0000000 0.15965104  0.4148377
+Fare   0.09398979  0.1596510 1.00000000  0.2162249
+Parch -0.20521777  0.4148377 0.21622494  1.0000000
+
+> corrplot(cor(cor_vars))
+```
+From the correlation matrix and the correlation plot, it is seen that there are some correlation between the Size of the family and the Ticket Fares. But not of them are severe enough to cause multicollinearity.
 
 
 
