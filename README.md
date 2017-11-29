@@ -1,13 +1,13 @@
 ## Exploratory Data Analysis
 ### Dataset - [Titanic Datset] from Kaggle (https://www.kaggle.com/c/titanic/data) 
 
-Setting the working directory
+#### Setting the working directory
 ```
 setwd()
 getwd()
 ```
 
-Installing and Importing the required libraries
+#### Installing and Importing the required libraries
 ```
 library(mice)
 library(dplyr)
@@ -18,14 +18,14 @@ library(ggthemes)
 library(reshape2)
 library(corrplot)
 ```
-Importing the titanic dataset
+#### Importing the titanic dataset
 ```
 train = read.csv("train.csv", header=T, na.strings="")
 View(train)
 head(train)
 tail(train)
 ```
-Checking the structure of the dataset and its summary
+#### Checking the structure of the dataset and its summary
 ```
 > dim(train)
 [1] 891  12
@@ -74,7 +74,7 @@ Checking the structure of the dataset and its summary
 ```
 From the above summary the basic statistical mesaure of each variable is obtained and then it is notices that there are missing values in the variables - Age, Cabin  and Embarked
           
-Converting the Catergorical Variables from numeric to factors
+#### Converting the Catergorical Variables from numeric to factors
 ```
 train$Pclass = factor(train$Pclass, levels = c(1,2,3), labels = c("1st", "2nd","3rd"))
 train$Survived = factor(train$Survived, levels=c(0,1), labels = c("Not Survived", "Survived"))
@@ -97,7 +97,7 @@ Not Survived     Survived
 female   male 
    314    577 
 ```
-Histogram is used to get a better understanding of data visually
+#### Histogram is used to get a better understanding of data visually
 ```
 barplot(table(train$Pclass), xlab="Passenger Class", ylab="Frequency", main="Histogram of Passenger Class", col = "lightblue")
 barplot(table(train$Sex), xlab="Sex", ylab="Frequency", main="Histogram of Sex", col = "red")
@@ -109,7 +109,7 @@ barplot(table(train$Embarked), xlab="Port of Embarkment", ylab="Frequency", main
 ![hist_emb](https://user-images.githubusercontent.com/16735822/33371530-10b8b1d2-d521-11e7-8193-e22219810746.png)
 
 
-Effect of each variable on the Survival Rate is identified
+#### Effect of each variable on the Survival Rate is identified
 ```
 sur_sex = c(0,0)
 sur_sex[1] =filter(train, Survived ==1 & Sex =="1") %>% nrow  #Sex and Survived should be numeric
@@ -119,6 +119,7 @@ plot(sur_sex,type = "o", xlab = "Sex", ylab="No. of Survivors" , xaxt="n")
 axis(1, at=c(1,2), labels=c("Female", "Male"))
 ```
 ![eff_sex](https://user-images.githubusercontent.com/16735822/33371678-87bc73e0-d521-11e7-82d3-b623944a063c.png)
+
 The female survivors are much greater than the male survivors
 
 
@@ -132,6 +133,7 @@ plot(sur_cls,type = "o", xlab = "Sex", ylab="No. of Survivors" , xaxt="n")
 axis(1, at=c(1,2,3), labels=c("1st", "2nd","3rd"))
 ```
 ![eff_class](https://user-images.githubusercontent.com/16735822/33371701-9bfe7fe2-d521-11e7-9d59-2af4802f96cc.png)
+
 The first class passengers survived the most and lowest number of survivors were in the 2nd class of the ship
 
 
@@ -145,31 +147,34 @@ plot(sur_p,type = "o", xlab = "Sex", ylab="No. of Survivors" , xaxt="n")
 axis(1, at=c(1,2,3), labels=c("Cherbourg", "Queenstown", "Southampton"))
 ```
 ![eff_emb](https://user-images.githubusercontent.com/16735822/33371734-b6874f10-d521-11e7-93fc-f1dcfb692e89.png)
+
 The people who boarded at the Queenstown port survived the least while the maximum corresponds to the Southhampton port
 
 
 
-Interaction effect 
+#### Interaction effect 
  - Interaction effect is used to the combined interaction effect on the survival rate of the passengers
  
 ```
 interaction.plot(train$Pclass, train$Sex, train$Survived, fun=mean, legend = TRUE, xlab="Passenger Class", ylab="Mean number of Survivors", main="Interaction Effect between Passenger Class and Sex")
 ```
 ![iplot_class_sex](https://user-images.githubusercontent.com/16735822/33371761-c924f47e-d521-11e7-973b-438165fc2c9f.png)
+
 Intraction effect is there between the Sex and the Class variable. The first class and second female passengers has the highest mean number of survivor than the third class female passengers. Regarding male, first class passengers survived more than the other two class.
 
 ```
 interaction.plot(train$Pclass, train$Embarked, train$Survived, fun=mean, legend = TRUE, xlab="Passenger Class", ylab="Mean number of Survivors", main="Interaction Effect between Passenger Class and Sex")
 ```
 ![iplot_class_emb](https://user-images.githubusercontent.com/16735822/33371779-d61d9a46-d521-11e7-9156-16155d275b64.png)
+
 Iteraction effect also exist between Class and the Embarkment Port. 
 - First class passengers boarded from Queenstown and Southhampton survived the most, while 3rd class passengers from these two ports survived the least
  - Mean number of Survivors for the 1st and 2nd class from Cherbourg port seems to be the same.
  - There is no interaction effect for 2nd and 3rd class passengers boarded from Cherbourg and Queenstown
  
  
-Missing data Imputation 
-Checking the missing values in each column respectively
+### Missing data Imputation 
+#### Checking the missing values in each column respectively
 ```
 > sapply(train, function(x) sum(is.na(x)))
 PassengerId    Survived      Pclass        Name         Sex         Age       SibSp       Parch 
@@ -177,7 +182,7 @@ PassengerId    Survived      Pclass        Name         Sex         Age       Si
      Ticket        Fare       Cabin    Embarked 
           0           0         687           2 
 ```
-Imputing the 2 missing value for the Embarked Column
+#### Imputing the 2 missing value for the Embarked Column
 ```
 > which(is.na(train$Embarked))
 [1]  62 830
@@ -202,7 +207,7 @@ Imputing the 2 missing value for the Embarked Column
 ```
 The above two missing values are imputed by using the data avaiable publicly in Encyclopedia about the two passengers. Since, they both have started their journey from Southhampton, the corresponding levels are assigned to them.
 
-Imputation of values in Age column is doing using MICE package
+#### Imputation of values in Age column is doing using MICE package
 ```
 init = mice(train, maxit = 0)
 Multiply imputed data set
@@ -265,8 +270,9 @@ PassengerId    Survived      Pclass        Name         Sex         Age       Si
 Since, the Cabin Variable is highly having unique values and its very difficult to interpret and obtain those values, they are not imputed and it is also removed from the modelling because of the high number of missing values. 
 
 
-Correlation matrix 
+#### Correlation matrix 
   - Correlation matrix is used to see the correlation between the variables and it is useful in finding if multicollinearity exists between the explanatory variables.
+Note : Correlation matrix cannot be run with NA values. So, the values must be imputed beforehand.
 
 ```
 > cor_vars = train[,c("Age", "SibSp", "Fare", "Parch")]
@@ -282,7 +288,8 @@ Parch -0.20521777  0.4148377 0.21622494  1.0000000
 ```
 
 ![corrplot](https://user-images.githubusercontent.com/16735822/33371809-e6f12892-d521-11e7-8567-34e33534f711.png)
-From the correlation matrix and the correlation plot, it is seen that there are some correlation between the Size of the family and the Ticket Fares. But not of them are severe enough to cause multicollinearity.
+
+From the correlation matrix and the correlation plot, confirms our inital intution that there must be correlation between the Size of the family and the Ticket Fares. But not of them are severe enough to cause multicollinearity.
 
 
 
