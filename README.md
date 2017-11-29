@@ -103,7 +103,11 @@ barplot(table(train$Pclass), xlab="Passenger Class", ylab="Frequency", main="His
 barplot(table(train$Sex), xlab="Sex", ylab="Frequency", main="Histogram of Sex", col = "red")
 barplot(table(train$Embarked), xlab="Port of Embarkment", ylab="Frequency", main="Histogram of Port of Embarkment", col = "green")
 ```
-(https://github.com/ajaygautam95/EDA---Titanic-Dataset-in-R/blob/master/Hist_PClass.png)
+
+![hist_pclass](https://user-images.githubusercontent.com/16735822/33371508-fc810d40-d520-11e7-84b2-2065180f0095.png)
+![hist_sex](https://user-images.githubusercontent.com/16735822/33371491-eba6d612-d520-11e7-8992-63854d71d911.png)
+![hist_emb](https://user-images.githubusercontent.com/16735822/33371530-10b8b1d2-d521-11e7-8193-e22219810746.png)
+
 
 Effect of each variable on the Survival Rate is identified
 ```
@@ -114,8 +118,10 @@ sur_sex[2] =filter(train, Survived ==1 & Sex =="2") %>% nrow
 plot(sur_sex,type = "o", xlab = "Sex", ylab="No. of Survivors" , xaxt="n")
 axis(1, at=c(1,2), labels=c("Female", "Male"))
 ```
-[Photo]
+![eff_sex](https://user-images.githubusercontent.com/16735822/33371678-87bc73e0-d521-11e7-82d3-b623944a063c.png)
 The female survivors are much greater than the male survivors
+
+
 ```
 sur_cls = c(0,0,0)
 sur_cls[1] =filter(train, Survived ==1 & Pclass ==1) %>% nrow 
@@ -125,7 +131,9 @@ sur_cls[3] =filter(train, Survived ==1 & Pclass ==3) %>% nrow
 plot(sur_cls,type = "o", xlab = "Sex", ylab="No. of Survivors" , xaxt="n")
 axis(1, at=c(1,2,3), labels=c("1st", "2nd","3rd"))
 ```
+![eff_class](https://user-images.githubusercontent.com/16735822/33371701-9bfe7fe2-d521-11e7-9d59-2af4802f96cc.png)
 The first class passengers survived the most and lowest number of survivors were in the 2nd class of the ship
+
 
 ```
 sur_p = c(0,0,0)
@@ -136,7 +144,10 @@ sur_p[3] =filter(train, Survived ==1 & Embarked =="S") %>% nrow
 plot(sur_p,type = "o", xlab = "Sex", ylab="No. of Survivors" , xaxt="n")
 axis(1, at=c(1,2,3), labels=c("Cherbourg", "Queenstown", "Southampton"))
 ```
+![eff_emb](https://user-images.githubusercontent.com/16735822/33371734-b6874f10-d521-11e7-93fc-f1dcfb692e89.png)
 The people who boarded at the Queenstown port survived the least while the maximum corresponds to the Southhampton port
+
+
 
 Interaction effect 
  - Interaction effect is used to the combined interaction effect on the survival rate of the passengers
@@ -144,11 +155,13 @@ Interaction effect
 ```
 interaction.plot(train$Pclass, train$Sex, train$Survived, fun=mean, legend = TRUE, xlab="Passenger Class", ylab="Mean number of Survivors", main="Interaction Effect between Passenger Class and Sex")
 ```
+![iplot_class_sex](https://user-images.githubusercontent.com/16735822/33371761-c924f47e-d521-11e7-973b-438165fc2c9f.png)
 Intraction effect is there between the Sex and the Class variable. The first class and second female passengers has the highest mean number of survivor than the third class female passengers. Regarding male, first class passengers survived more than the other two class.
 
 ```
 interaction.plot(train$Pclass, train$Embarked, train$Survived, fun=mean, legend = TRUE, xlab="Passenger Class", ylab="Mean number of Survivors", main="Interaction Effect between Passenger Class and Sex")
 ```
+![iplot_class_emb](https://user-images.githubusercontent.com/16735822/33371779-d61d9a46-d521-11e7-9156-16155d275b64.png)
 Iteraction effect also exist between Class and the Embarkment Port. 
 - First class passengers boarded from Queenstown and Southhampton survived the most, while 3rd class passengers from these two ports survived the least
  - Mean number of Survivors for the 1st and 2nd class from Cherbourg port seems to be the same.
@@ -267,6 +280,8 @@ Parch -0.20521777  0.4148377 0.21622494  1.0000000
 
 > corrplot(cor(cor_vars))
 ```
+
+![corrplot](https://user-images.githubusercontent.com/16735822/33371809-e6f12892-d521-11e7-8567-34e33534f711.png)
 From the correlation matrix and the correlation plot, it is seen that there are some correlation between the Size of the family and the Ticket Fares. But not of them are severe enough to cause multicollinearity.
 
 
