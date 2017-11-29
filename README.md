@@ -100,6 +100,149 @@ female   male
 Histogram is used to get a better understanding of data visually
 ```
 barplot(table(train$Pclass), xlab="Passenger Class", ylab="Frequency", main="Histogram of Passenger Class", col = "lightblue")
+barplot(table(train$Sex), xlab="Sex", ylab="Frequency", main="Histogram of Sex", col = "red")
+barplot(table(train$Embarked), xlab="Port of Embarkment", ylab="Frequency", main="Histogram of Port of Embarkment", col = "green")
+```
+(https://github.com/ajaygautam95/EDA---Titanic-Dataset-in-R/blob/master/Hist_PClass.png)
+
+Effect of each variable on the Survival Rate is identified
+```
+sur_sex = c(0,0)
+sur_sex[1] =filter(train, Survived ==1 & Sex =="1") %>% nrow  #Sex and Survived should be numeric
+sur_sex[2] =filter(train, Survived ==1 & Sex =="2") %>% nrow
+
+plot(sur_sex,type = "o", xlab = "Sex", ylab="No. of Survivors" , xaxt="n")
+axis(1, at=c(1,2), labels=c("Female", "Male"))
+```
+[Photo]
+The female survivors are much greater than the male survivors
+```
+sur_cls = c(0,0,0)
+sur_cls[1] =filter(train, Survived ==1 & Pclass ==1) %>% nrow 
+sur_cls[2] =filter(train, Survived ==1 & Pclass ==2) %>% nrow
+sur_cls[3] =filter(train, Survived ==1 & Pclass ==3) %>% nrow
+
+plot(sur_cls,type = "o", xlab = "Sex", ylab="No. of Survivors" , xaxt="n")
+axis(1, at=c(1,2,3), labels=c("1st", "2nd","3rd"))
+```
+The first class passengers survived the most and lowest number of survivors were in the 2nd class of the ship
+
+```
+sur_p = c(0,0,0)
+sur_p[1] =filter(train, Survived ==1 & Embarked =="C") %>% nrow 
+sur_p[2] =filter(train, Survived ==1 & Embarked =="Q") %>% nrow
+sur_p[3] =filter(train, Survived ==1 & Embarked =="S") %>% nrow
+
+plot(sur_p,type = "o", xlab = "Sex", ylab="No. of Survivors" , xaxt="n")
+axis(1, at=c(1,2,3), labels=c("Cherbourg", "Queenstown", "Southampton"))
+```
+The people who boarded at the Queenstown port survived the least while the maximum corresponds to the Southhampton port
+
+Interaction effect 
+ - Interaction effect is used to the combined interaction effect on the survival rate of the passengers
+ 
+```
+interaction.plot(train$Pclass, train$Sex, train$Survived, fun=mean, legend = TRUE, xlab="Passenger Class", ylab="Mean number of Survivors", main="Interaction Effect between Passenger Class and Sex")
+```
+Intraction effect is there between the Sex and the Class variable. The first class and second female passengers has the highest mean number of survivor than the third class female passengers. Regarding male, first class passengers survived more than the other two class.
+
+```
+interaction.plot(train$Pclass, train$Embarked, train$Survived, fun=mean, legend = TRUE, xlab="Passenger Class", ylab="Mean number of Survivors", main="Interaction Effect between Passenger Class and Sex")
+```
+Iteraction effect also exist between Class and the Embarkment Port. 
+- First class passengers boarded from Queenstown and Southhampton survived the most, while 3rd class passengers from these two ports survived the least
+ - Mean number of Survivors for the 1st and 2nd class from Cherbourg port seems to be the same.
+ - There is no interaction effect for 2nd and 3rd class passengers boarded from Cherbourg and Queenstown
+ 
+ 
+Missing data Imputation 
+Checking the missing values in each column respectively
+```
+> sapply(train, function(x) sum(is.na(x)))
+PassengerId    Survived      Pclass        Name         Sex         Age       SibSp       Parch 
+          0           0           0           0           0         177           0           0 
+     Ticket        Fare       Cabin    Embarked 
+          0           0         687           2 
+```
+Imputing the 2 missing value for the Embarked Column
+```
+> which(is.na(train$Embarked))
+[1]  62 830
+
+> train[c(62,830),]
+    PassengerId Survived Pclass                                      Name    Sex Age SibSp Parch
+62           62        1      1                       Icard, Miss. Amelie female  38     0     0
+830         830        1      1 Stone, Mrs. George Nelson (Martha Evelyn) female  62     0     0
+    Ticket Fare Cabin Embarked
+62  113572   80   B28     <NA>
+830 113572   80   B28     <NA>
+
+> "S" -> train[c(62,830), "Embarked"]
+
+> train[c(62,830),]
+    PassengerId Survived Pclass                                      Name    Sex Age SibSp Parch
+62           62        1      1                       Icard, Miss. Amelie female  38     0     0
+830         830        1      1 Stone, Mrs. George Nelson (Martha Evelyn) female  62     0     0
+    Ticket Fare Cabin Embarked
+62  113572   80   B28        S
+830 113572   80   B28        S
+```
+The above two missing values are imputed by using the data avaiable publicly in Encyclopedia about the two passengers. Since, they both have started their journey from Southhampton, the corresponding levels are assigned to them.
+
+Imputation of values in Age column is doing using MICE package
+```
+init = mice(train, maxit = 0)
+Multiply imputed data set
+Call:
+mice(data = train, maxit = 0)
+Number of multiple imputations:  5
+Missing cells per column:
+PassengerId    Survived      Pclass        Name         Sex         Age       SibSp       Parch 
+          0           0           0           0           0         177           0           0 
+     Ticket        Fare       Cabin    Embarked 
+          0           0         687           0 
+Imputation methods:
+PassengerId    Survived      Pclass        Name         Sex         Age       SibSp       Parch 
+         ""          ""          ""          ""          ""       "pmm"          ""          "" 
+     Ticket        Fare       Cabin    Embarked 
+         ""          ""   "polyreg"          "" 
+VisitSequence:
+  Age Cabin 
+    6    11 
+PredictorMatrix:
+            PassengerId Survived Pclass Name Sex Age SibSp Parch Ticket Fare Cabin Embarked
+PassengerId           0        0      0    0   0   0     0     0      0    0     0        0
+Survived              0        0      0    0   0   0     0     0      0    0     0        0
+Pclass                0        0      0    0   0   0     0     0      0    0     0        0
+Name                  0        0      0    0   0   0     0     0      0    0     0        0
+Sex                   0        0      0    0   0   0     0     0      0    0     0        0
+Age                   1        1      1    1   1   0     1     1      1    1     1        1
+SibSp                 0        0      0    0   0   0     0     0      0    0     0        0
+Parch                 0        0      0    0   0   0     0     0      0    0     0        0
+Ticket                0        0      0    0   0   0     0     0      0    0     0        0
+Fare                  0        0      0    0   0   0     0     0      0    0     0        0
+Cabin                 1        1      1    1   1   1     1     1      1    1     0        1
+Embarked              0        0      0    0   0   0     0     0      0    0     0        0
+Random generator seed value:  NA 
+predM = init$predictorMatrix
+meth = init$method
+```
+The initial itertaion is run with maxit set as zero. The predictor matrix and the method are extracted and stored separately in 
+variables.
+Now the, the predictor matrix is modified by assigning the value zero - to the columns which are useless in predicting the Age. Since, we are only predicting Age ,the imputation method for Cabin is set as NULL.
+
+```
+predM[, c("PassengerId", "Name","Ticket","Cabin")]=0    
+meth[c("Cabin")]=""
+```
+As the changes are made, the imputation is iterated for 5 times with the respective predictor matrix and imputation methods. Complete function of MICE package will append the imputed values to the original data set. 
+
+```
+imp = mice(train, m=5, predictorMatrix = predM, method = meth)
+train = complete(imp)
+```
+
+
 
 
 
