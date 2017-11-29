@@ -72,7 +72,7 @@ tail(train)
  NA's       :687   
 
 ```
-From the above summary the basic statistical mesaure of each variable is obtained and then it is notices that there are missing values in the variables - Age, Cabin  and Embarked
+From the above summary the basic statistical mesaure of each variable is obtained and then it is noticed that there are missing values in the variables - Age, Cabin  and Embarked
           
 #### Converting the Catergorical Variables from numeric to factors
 ```
@@ -292,7 +292,7 @@ Parch -0.20521777  0.4148377 0.21622494  1.0000000
 From the correlation matrix and the correlation plot, confirms our inital intution that there must be correlation between the Size of the family and the Ticket Fares. But not of them are severe enough to cause multicollinearity.
 
 
-
+The suitable modelling can be applied to the dataset as the inital analysis is done to predict the survivors. 
 
 
 
